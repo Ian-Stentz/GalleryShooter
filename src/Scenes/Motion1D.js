@@ -1,7 +1,7 @@
-class Motion extends Phaser.Scene {
+class GalleryL1 extends Phaser.Scene {
 
     constructor() {
-        super("Motion1D");
+        super("GalleryL1");
         this.my = {sprite: {}};
         this.my.projectiles = [];
         this.speed = 5;
@@ -18,8 +18,6 @@ class Motion extends Phaser.Scene {
         this.load.setPath("./assets/");
 
         this.load.image("body", "yellow_body_squircle.png");
-        this.load.image("face", "face_a.png");
-        this.load.image("hand", "hand_yellow_peace.png");
     }
 
     create() {
