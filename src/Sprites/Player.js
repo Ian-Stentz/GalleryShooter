@@ -11,7 +11,7 @@ class Player extends Phaser.GameObjects.Sprite {
         return this;
     }
 
-    update(delta) {
+    update(time, delta) {
         // Moving left
         if (this.left.isDown) {
             // Check to make sure the sprite can actually move left
@@ -27,5 +27,9 @@ class Player extends Phaser.GameObjects.Sprite {
                 this.x += this.playerSpeed * delta / 1000 * game.config.fps.target;
             }
         }
+    }
+
+    onCollide(other) {
+
     }
 }

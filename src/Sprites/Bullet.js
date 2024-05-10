@@ -1,8 +1,9 @@
 class Bullet extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, texture, frame) {        
+    constructor(scene, x, y, texture, frame, rotation) {        
         super(scene, x, y, texture, frame);
         this.visible = false;
         this.active = false;
+        this.angle = rotation;
         return this;
     }
 
