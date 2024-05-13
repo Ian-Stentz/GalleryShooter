@@ -17,20 +17,23 @@ class Powerup extends Phaser.GameObjects.Sprite {
             let result = this.scene.collides(this, this.scene.my.sprite.player);
             this.y += this.speed  * delta / 1000 * game.config.fps.target;
             if(this.y > game.config.height + this.displayHeight/2) {
-                this.kill();
+                this.kill(false);
             }
         }
     }
 
-    onCollide(other) {
+    onCollide(other) {  
         if(other instanceof Player) {
             this.scene.givePowerup(this.type);
-            this.kill();
+            this.scene.sound.play("powerupCollect");
+            this.kill(true);
         }
     }
 
-    kill() {
-        this.scene.powerupType = "None";
+    kill(collected=false) {
+        if(!collected) {
+            this.scene.powerupActive = false;
+        }
         this.scene.my.powerup = null;
         this.garbage = true;
         this.destroy(true);

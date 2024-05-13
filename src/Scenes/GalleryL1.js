@@ -10,27 +10,42 @@ class GalleryL1 extends Phaser.Scene {
         this.bulletCooldown = .35; // bullet cooldown in seconds
         this.bulletCooldownCounter = 0;
 
+        this.powerupActive = false;
         this.powerupType = "None";
         this.powerupList = ["V","Piercing","Heavy","Double"];
+        this.powerupTimer = 5;
+        this.powerupTimerCounter = 0;
     }
     
     preload() {
         //sprites folder
         this.load.setPath("./assets/sprites/");
         this.load.image("playerDef", "ship_0022.png");
+        this.load.image("playerV", "ship_0016.png");
+        this.load.image("playerPiercing", "ship_0023.png");
+        this.load.image("playerHeavy", "ship_0021.png");
+        this.load.image("playerDouble", "ship_0020.png");
 
         //tiles folder
         this.load.setPath("./assets/tiles/");
         this.load.image("bulletDef", "tile_0000.png");
-        this.load.image("powerupDef", "tile_0017.png")
+        this.load.image("bulletPiercing", "tile_0002.png");
+        this.load.image("powerupV", "tile_0016.png");
+        this.load.image("powerupPiercing", "tile_0002.png");
+        this.load.image("powerupHeavy", "tile_0003.png");
+        this.load.image("powerupDouble", "tile_0001.png");
+        this.load.image("powerupDef", "tile_0025.png");
 
         //audio folder
         this.load.setPath("./assets/audio/");
-        this.load.audio("shoot1", "laserSmall_000.ogg")
-        this.load.audio("shoot2", "laserSmall_001.ogg")
-        this.load.audio("shoot3", "laserSmall_002.ogg")
-        this.load.audio("shoot4", "laserSmall_003.ogg")
-        this.load.audio("shoot5", "laserSmall_004.ogg")
+        this.load.audio("shoot1", "laserSmall_000.ogg");
+        this.load.audio("shoot2", "laserSmall_001.ogg");
+        this.load.audio("shoot3", "laserSmall_002.ogg");
+        this.load.audio("shoot4", "laserSmall_003.ogg");
+        this.load.audio("shoot5", "laserSmall_004.ogg");
+        this.load.audio("powerupOff", "jingles_HIT00.ogg");
+        this.load.audio("powerupCollect", "jingles_HIT16.ogg");
+        this.load.audio("lose", "jingles_SAX07.ogg")
     }
     
     create() {
@@ -74,6 +89,14 @@ class GalleryL1 extends Phaser.Scene {
     update(time, delta) {
         let my = this.my;
         this.bulletCooldownCounter -= delta / 1000;
+        console.log(this.powerupType);
+        if(this.powerupType != "None") {
+            this.powerupTimerCounter -= delta / 1000;
+            if(this.powerupTimerCounter <= 0) {
+                this.givePowerup("None");
+                this.sound.play("powerupOff");
+            }
+        }
 
         // Check for bullet being fired
         if (this.space.isDown) {
@@ -99,8 +122,25 @@ class GalleryL1 extends Phaser.Scene {
 
     spawnPowerup() {
         let my = this.my;
-
-        my.sprite.powerup = new Powerup(this, 0, 0, "powerupDef", null, 6, this.randomChoice(this.powerupList));
+        let typeChoice = this.randomChoice(this.powerupList);
+        let sprite = "powerupDef";
+        switch(typeChoice) {
+            case "V":
+                sprite = "powerupV";
+                break;
+            case "Piercing":
+                sprite = "powerupPiercing";
+                break;
+            case "Heavy":
+                sprite = "powerupHeavy";
+                break;
+            case "Double":
+                sprite = "powerupDouble";
+                break;
+            default:
+                break;
+        }
+        my.sprite.powerup = new Powerup(this, 0, 0, sprite, null, 6, typeChoice);
         my.sprite.powerup.x = Math.random() * (game.config.width + my.sprite.powerup.displayWidth/2);
         my.sprite.powerup.y = my.sprite.powerup.displayHeight/2;
         this.powerupActive = true;
@@ -112,10 +152,34 @@ class GalleryL1 extends Phaser.Scene {
     }
 
     givePowerup(type) {
+        let my = this.my
         this.powerupType = type;
+        if(type != "None") {
+            console.log("beep");
+            this.powerupTimerCounter = this.powerupTimer;
+        }
+        switch(this.powerupType) {
+            case "V":
+                my.sprite.player.setTexture("playerV");
+                break;
+            case "Piercing":
+                my.sprite.player.setTexture("playerPiercing");
+                break;
+            case "Heavy":
+                my.sprite.player.setTexture("playerHeavy");
+                break;
+            case "Double":
+                my.sprite.player.setTexture("playerDouble");
+                break;
+            default:
+                my.sprite.player.setTexture("playerDef");
+                this.powerupActive = false;
+                break;
+        }
     }
 
     shootBullet() {
+        let my = this.my
         // Get the first inactive bullet, and make it active
         let bullet = my.sprite.bulletGroup.getFirstDead();
         let bulletTwo = my.sprite.bulletGroup.getFirstNth(2,false);

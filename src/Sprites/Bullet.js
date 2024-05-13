@@ -3,15 +3,16 @@ class Bullet extends Phaser.GameObjects.Sprite {
         super(scene, x, y, texture, frame);
         this.visible = false;
         this.active = false;
-        this.angle = rotation;
+        this.rotation = rotation;
+        this.piercing = piercing;
         this.damage = 1;
         return this;
     }
 
     update(time, delta) {
         if (this.active) {
-            this.x += this.speed * delta / 1000 * game.config.fps.target * Math.cos(this.angle + Math.PI/2);
-            this.y -= this.speed * delta / 1000 * game.config.fps.target * Math.sin(this.angle + Math.PI/2);
+            this.x += this.speed * delta / 1000 * game.config.fps.target * Math.cos(Math.PI/2 - this.rotation);
+            this.y -= this.speed * delta / 1000 * game.config.fps.target * Math.sin(Math.PI/2 - this.rotation);
             if (this.y < -(this.displayHeight/2)) {
                 this.makeInactive();
             }
