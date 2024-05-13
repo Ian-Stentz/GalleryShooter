@@ -7,9 +7,8 @@ class Manager {
 
     update(time, delta) {
         let dc = 100 - this.level * .1
-        if(!this.scene.powerupActive && Math.random() * 100 < dc) {
-            console.log(this.scene.powerupActive);
-            this.scene.spawnPowerup()
+        if(!(this.scene.powerupType == "None") && Math.random() * 100 < dc) {
+            this.scene.spawnPowerup();
         }
     }
 }

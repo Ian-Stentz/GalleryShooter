@@ -30,6 +30,6 @@ class Player extends Phaser.GameObjects.Sprite {
     }
 
     onCollide(other) {
-
+        
     }
 }

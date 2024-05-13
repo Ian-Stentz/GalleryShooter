@@ -30,7 +30,7 @@ class Powerup extends Phaser.GameObjects.Sprite {
     }
 
     kill() {
-        this.scene.powerupActive = false;
+        this.scene.powerupType = "None";
         this.scene.my.powerup = null;
         this.garbage = true;
         this.destroy(true);

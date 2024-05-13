@@ -10,7 +10,8 @@ class GalleryL1 extends Phaser.Scene {
         this.bulletCooldown = .35; // bullet cooldown in seconds
         this.bulletCooldownCounter = 0;
 
-        this.powerupActive = false;
+        this.powerupType = "None";
+        this.powerupList = ["V","Piercing","Heavy","Double"];
     }
     
     preload() {
@@ -52,7 +53,7 @@ class GalleryL1 extends Phaser.Scene {
         my.sprite.bulletGroup = this.add.group({
             active: true,
             defaultKey: "bulletDef",
-            maxSize: 15,
+            maxSize: 30,
             runChildUpdate: true
             }
         )
@@ -77,17 +78,7 @@ class GalleryL1 extends Phaser.Scene {
         // Check for bullet being fired
         if (this.space.isDown) {
             if (this.bulletCooldownCounter < 0) {
-                // Get the first inactive bullet, and make it active
-                let bullet = my.sprite.bulletGroup.getFirstDead();
-                // bullet will be null if there are no inactive (available) bullets
-                if (bullet != null) {
-                    this.bulletCooldownCounter = this.bulletCooldown;
-                    bullet.makeActive();
-                    bullet.x = my.sprite.player.x;
-                    bullet.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
-                    //play random bullet noise
-                    this.sound.play(this.randomChoice(my.audio.shootdef));
-                }
+                this.shootBullet();
             }
         }
 
@@ -109,7 +100,7 @@ class GalleryL1 extends Phaser.Scene {
     spawnPowerup() {
         let my = this.my;
 
-        my.sprite.powerup = new Powerup(this, 0, 0, "powerupDef", null, 6);
+        my.sprite.powerup = new Powerup(this, 0, 0, "powerupDef", null, 6, this.randomChoice(this.powerupList));
         my.sprite.powerup.x = Math.random() * (game.config.width + my.sprite.powerup.displayWidth/2);
         my.sprite.powerup.y = my.sprite.powerup.displayHeight/2;
         this.powerupActive = true;
@@ -121,6 +112,84 @@ class GalleryL1 extends Phaser.Scene {
     }
 
     givePowerup(type) {
-        
+        this.powerupType = type;
+    }
+
+    shootBullet() {
+        // Get the first inactive bullet, and make it active
+        let bullet = my.sprite.bulletGroup.getFirstDead();
+        let bulletTwo = my.sprite.bulletGroup.getFirstNth(2,false);
+        // bullet will be null if there are no inactive (available) bullets
+        if (bullet != null) {
+            switch(this.powerupType) {
+                case "V":
+                    if(bulletTwo != null) {
+                        this.bulletCooldownCounter = this.bulletCooldown;
+                        bullet.makeActive();
+                        bulletTwo.makeActive();
+                        bullet.x = my.sprite.player.x;
+                        bullet.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
+                        bullet.rotation = Math.PI / 12;
+                        bullet.piercing = false;
+                        bullet.damage = 1;
+                        bulletTwo.x = my.sprite.player.x;
+                        bulletTwo.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
+                        bulletTwo.rotation = - Math.PI / 12;
+                        bulletTwo.piercing = false;
+                        bulletTwo.damage = 1;
+                        this.sound.play(this.randomChoice(my.audio.shootdef));
+                    }
+                    break;
+                case "Piercing":
+                    this.bulletCooldownCounter = this.bulletCooldown;
+                    bullet.makeActive();
+                    bullet.rotation = 0;
+                    bullet.piercing = true;
+                    bullet.damage = 1;
+                    bullet.x = my.sprite.player.x;
+                    bullet.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
+                    //play random bullet noise
+                    this.sound.play(this.randomChoice(my.audio.shootdef));
+                    break;
+                case "Heavy":
+                    this.bulletCooldownCounter = this.bulletCooldown;
+                    bullet.makeActive();
+                    bullet.rotation = 0;
+                    bullet.piercing = true;
+                    bullet.damage = 2;
+                    bullet.x = my.sprite.player.x;
+                    bullet.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
+                    this.sound.play(this.randomChoice(my.audio.shootdef));
+                    break;
+                case "Double":
+                    if(bulletTwo != null) {
+                        this.bulletCooldownCounter = this.bulletCooldown;
+                        bullet.makeActive();
+                        bulletTwo.makeActive();
+                        bullet.rotation = 0;
+                        bullet.piercing = false;
+                        bullet.damage = 1;
+                        bullet.x = my.sprite.player.x;
+                        bullet.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
+                        bulletTwo.rotation = 0;
+                        bulletTwo.piercing = false;
+                        bulletTwo.damage = 1;
+                        bulletTwo.x = my.sprite.player.x;
+                        bulletTwo.y = my.sprite.player.y - (my.sprite.player.displayHeight/2) - (bullet.displayHeight * 1.2);
+                        this.sound.play(this.randomChoice(my.audio.shootdef));
+                    }
+                    break;
+                default:
+                    this.bulletCooldownCounter = this.bulletCooldown;
+                    bullet.makeActive();
+                    bullet.rotation = 0;
+                    bullet.piercing = false;
+                    bullet.damage = 1;
+                    bullet.x = my.sprite.player.x;
+                    bullet.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
+                    //play random bullet noise
+                    this.sound.play(this.randomChoice(my.audio.shootdef));
+            }
+        }
     }
 }
