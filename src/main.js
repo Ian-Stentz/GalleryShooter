@@ -21,7 +21,7 @@ let config = {
     },
     width: 800,
     height: 640,
-    scene: [GalleryL1],
+    scene: [GalleryMM, GalleryL1],
     fps: {forceSetTimeOut: true, target: 30}
 }
 

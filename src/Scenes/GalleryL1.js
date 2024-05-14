@@ -15,6 +15,7 @@ class GalleryL1 extends Phaser.Scene {
         this.powerupList = ["V","Piercing","Heavy","Double"];
         this.powerupTimer = 5;
         this.powerupTimerCounter = 0;
+        this.freeze = false;
     }
     
     preload() {
@@ -88,27 +89,29 @@ class GalleryL1 extends Phaser.Scene {
 
     update(time, delta) {
         let my = this.my;
-        this.bulletCooldownCounter -= delta / 1000;
-        console.log(this.powerupType);
-        if(this.powerupType != "None") {
-            this.powerupTimerCounter -= delta / 1000;
-            if(this.powerupTimerCounter <= 0) {
-                this.givePowerup("None");
-                this.sound.play("powerupOff");
+        if(!this.freeze) {
+            this.bulletCooldownCounter -= delta / 1000;
+            console.log(this.powerupType);
+            if(this.powerupType != "None") {
+                this.powerupTimerCounter -= delta / 1000;
+                if(this.powerupTimerCounter <= 0) {
+                    this.givePowerup("None");
+                    this.sound.play("powerupOff");
+                }
             }
-        }
 
-        // Check for bullet being fired
-        if (this.space.isDown) {
-            if (this.bulletCooldownCounter < 0) {
-                this.shootBullet();
+            // Check for bullet being fired
+            if (this.space.isDown) {
+                if (this.bulletCooldownCounter < 0) {
+                    this.shootBullet();
+                }
             }
-        }
 
-        my.sprite.player.update(time, delta);
-        my.manager.update(time, delta);
-        if(my.sprite.powerup) {
-            my.sprite.powerup.update(time, delta);
+            my.sprite.player.update(time, delta);
+            my.manager.update(time, delta);
+            if(my.sprite.powerup) {
+                my.sprite.powerup.update(time, delta);
+            }
         }
     }
 
@@ -189,71 +192,53 @@ class GalleryL1 extends Phaser.Scene {
                 case "V":
                     if(bulletTwo != null) {
                         this.bulletCooldownCounter = this.bulletCooldown;
-                        bullet.makeActive();
-                        bulletTwo.makeActive();
-                        bullet.x = my.sprite.player.x;
-                        bullet.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
-                        bullet.rotation = Math.PI / 12;
-                        bullet.piercing = false;
-                        bullet.damage = 1;
-                        bulletTwo.x = my.sprite.player.x;
-                        bulletTwo.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
-                        bulletTwo.rotation = - Math.PI / 12;
-                        bulletTwo.piercing = false;
-                        bulletTwo.damage = 1;
+                        this.setBulletDefaults(bullet);
+                        this.setBulletDefaults(bulletTwo);
+                        bullet.rotation = Math.PI / 16;
+                        bulletTwo.rotation = - Math.PI / 16;
                         this.sound.play(this.randomChoice(my.audio.shootdef));
                     }
                     break;
                 case "Piercing":
                     this.bulletCooldownCounter = this.bulletCooldown;
-                    bullet.makeActive();
-                    bullet.rotation = 0;
+                    this.setBulletDefaults(bullet);
+                    bullet.setTexture("bulletPiercing");
                     bullet.piercing = true;
-                    bullet.damage = 1;
-                    bullet.x = my.sprite.player.x;
-                    bullet.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
-                    //play random bullet noise
                     this.sound.play(this.randomChoice(my.audio.shootdef));
                     break;
                 case "Heavy":
                     this.bulletCooldownCounter = this.bulletCooldown;
-                    bullet.makeActive();
-                    bullet.rotation = 0;
-                    bullet.piercing = true;
+                    this.setBulletDefaults(bullet);
+                    bullet.setScale(1.2);
                     bullet.damage = 2;
-                    bullet.x = my.sprite.player.x;
-                    bullet.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
                     this.sound.play(this.randomChoice(my.audio.shootdef));
                     break;
                 case "Double":
                     if(bulletTwo != null) {
                         this.bulletCooldownCounter = this.bulletCooldown;
-                        bullet.makeActive();
-                        bulletTwo.makeActive();
-                        bullet.rotation = 0;
-                        bullet.piercing = false;
-                        bullet.damage = 1;
-                        bullet.x = my.sprite.player.x;
-                        bullet.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
-                        bulletTwo.rotation = 0;
-                        bulletTwo.piercing = false;
-                        bulletTwo.damage = 1;
-                        bulletTwo.x = my.sprite.player.x;
-                        bulletTwo.y = my.sprite.player.y - (my.sprite.player.displayHeight/2) - (bullet.displayHeight * 1.2);
+                        this.setBulletDefaults(bullet);
+                        this.setBulletDefaults(bulletTwo);
+                        bulletTwo.y = my.sprite.player.y - (my.sprite.player.displayHeight/2) - (bullet.displayHeight * 1.5);
                         this.sound.play(this.randomChoice(my.audio.shootdef));
                     }
                     break;
                 default:
                     this.bulletCooldownCounter = this.bulletCooldown;
-                    bullet.makeActive();
-                    bullet.rotation = 0;
-                    bullet.piercing = false;
-                    bullet.damage = 1;
-                    bullet.x = my.sprite.player.x;
-                    bullet.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
-                    //play random bullet noise
+                    this.setBulletDefaults(bullet);
                     this.sound.play(this.randomChoice(my.audio.shootdef));
             }
         }
+    }
+    
+    setBulletDefaults(bullet) {
+        let my = this.my;
+        bullet.makeActive();
+        bullet.rotation = 0;
+        bullet.piercing = false;
+        bullet.damage = 1;
+        bullet.x = my.sprite.player.x;
+        bullet.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
+        bullet.setTexture("bulletDef")
+        bullet.setScale(1);
     }
 }
