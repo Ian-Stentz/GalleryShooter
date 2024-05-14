@@ -53,6 +53,10 @@ class GalleryL1 extends Phaser.Scene {
         this.load.image("powerupHeavy", "tile_0003.png");
         this.load.image("powerupDouble", "tile_0001.png");
         this.load.image("powerupDef", "tile_0025.png");
+        // Load tilemap information
+        this.load.image("BackgroundTileset", "tiles_packed.png");                         
+        // Packed tilemap
+        this.load.tilemapTiledJSON("Background-Tiles2", "Background-Tiles2.tmj")
 
         //audio folder
         this.load.setPath("./assets/audio/");
@@ -70,15 +74,21 @@ class GalleryL1 extends Phaser.Scene {
     
     create() {
         let my = this.my;
+
+        this.map = this.add.tilemap("Background-Tiles2", 16, 16, 25, 20);
+        this.tileset = this.map.addTilesetImage("BackgroundTilesPacked", "BackgroundTileset");
+        this.groundLayer = this.map.createLayer("Background", this.tileset, 0, 0);
+        this.groundLayer.setScale(2.0);
+
         let scene = this;
         my.manager = new Manager(this, 1);
         this.left = this.input.keyboard.addKey("A");
         this.right = this.input.keyboard.addKey("D");
         this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.debug = this.input.keyboard.addKey("X");
-        this.debug2 = this.input.keyboard.addKey("E");
+        //this.debug2 = this.input.keyboard.addKey("E");
         this.debug.on('down', function(event) {my.sprite.player.doDamage()});
-        this.debug2.on('down', function(event) {scene.spawnEnemy(game.config.width/2, true, "Yellow", 3)});
+        //this.debug2.on('down', function(event) {scene.spawnEnemy(game.config.width/2, true, "Yellow", 3)});
 
         my.audio.shootdef = ["shoot2", "shoot3", "shoot5"];
         my.audio.shootheavy = ["shoot1", "shoot4"];
@@ -133,7 +143,6 @@ class GalleryL1 extends Phaser.Scene {
         let my = this.my;
         if(!this.freeze) {
             this.bulletCooldownCounter -= delta / 1000;
-            console.log(this.powerupType);
             if(this.powerupType != "None") {
                 this.powerupTimerCounter -= delta / 1000;
                 if(this.powerupTimerCounter <= 0) {

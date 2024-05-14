@@ -18,7 +18,6 @@ class Enemy extends Phaser.GameObjects.Sprite {
 
     create() {
         this.health = this.tier;
-        console.log(this.health);
         this.speed = 5;
         this.iFrameCounter = 0;
         this.setScale(2);
@@ -99,7 +98,6 @@ class Enemy extends Phaser.GameObjects.Sprite {
     doDamage(damage) {
         if(this.iFrameCounter <= 0) {
             this.health -= damage;
-            console.log(this.health);
             if(this.health <= 0) {
                 this.scene.sound.play("death");
                 this.makeInactive();
