@@ -209,6 +209,7 @@ class GalleryL1 extends Phaser.Scene {
                 break;
         }
         my.sprite.powerup = new Powerup(this, 0, 0, sprite, null, 6, typeChoice);
+        my.sprite.powerup.setScale(1.5);
         my.sprite.powerup.x = Math.random() * (game.config.width - my.sprite.powerup.displayWidth) + my.sprite.powerup.displayWidth/2;
         my.sprite.powerup.y = my.sprite.powerup.displayHeight/2;
         this.powerupActive = true;
