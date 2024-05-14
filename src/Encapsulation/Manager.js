@@ -3,12 +3,16 @@ class Manager {
     constructor(scene, level) {
         this.scene = scene;
         this.level = level;
+        this.enemyDc = 80 - this.level * 1;
+        this.powerupDc = 50 - this.level * 1;
     }
 
     update(time, delta) {
-        let dc = 100 - this.level * .1
-        if(!this.scene.powerupActive && Math.random() * 100 < dc) {
+        if(!this.scene.powerupActive && Math.random() * 100 < this.powerupDc) {
             this.scene.spawnPowerup();
+        }
+        if(!this.scene.my.sprite.enemy && Math.random() * 100 < this.enemyDc) {
+            this.scene.spawnRandomEnemy();
         }
     }
 }

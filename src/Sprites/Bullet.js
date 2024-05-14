@@ -6,6 +6,7 @@ class Bullet extends Phaser.GameObjects.Sprite {
         this.rotation = rotation;
         this.piercing = piercing;
         this.damage = 1;
+        this.hitlist = [];
         return this;
     }
 
@@ -30,9 +31,12 @@ class Bullet extends Phaser.GameObjects.Sprite {
     }
 
     onCollide(other) {
-        if(!piercing && other instanceof Enemy) {
-            this.visible = false;
-            this.active = false;
+        if(other instanceof Enemy && !(other in this.hitlist)) {
+            this.hitlist.push(other);
+            if(!this.piercing) {
+                this.makeInactive();
+            }
+            other.doDamage(this.damage);
         }
     }
 }
